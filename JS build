@@ -1,0 +1,58 @@
+JS is kind of complex.
+
+1. Two totally different runtime, browser and native.
+  1. Multi browsers runtime, .e.g, chrome, firefox
+  1. Multi native runtime, .e.g, node, deno.
+  1. Even multi engine, .e.g, V8, SpiderMonkey
+1. Different package manager, .e.g, npm, yarn, pnpm
+1. Dialect langues, .e.g, typescript, coffescript
+1. Multi type system, .e.g, typescript, Flow
+1. Compile Target, .e.g scala, purescript, typescript, javascript(babel, swc)
+1. Library or application
+
+So, with such a complex situation, there are lots of questions.
+
+The topic in this blog is "How to build JS"
+
+## Why it's complex
+
+### Which JS engine and version are you using?
+Browser is a pretty special runtime, which is under user's control. It's usually consider a bad user experience if the page crash or not working when user opens a page.
+
+However, because user has different preferred browser or too lazy to update browser, there is no guarantee about JS engine.
+
+So, a transpiler(from JS to JS) might be useful. Because it could transform new syntax to old syntax, which is supported by more runtime.
+
+### node_modules and dependency
+There are devDependency and dependency(and more, but we  do not care so much).
+
+devDependency is used only when build the package itself. If others wants to use this packge, they do not need to download them.
+
+dependency is something like runtime dependency.
+
+When install a package in dependency list, the dependency of the package is also installed, so that the package have correct runtime dependency.
+
+###  bundle
+We define bundle as merge multi files into fewer.
+
+So it's differnt from build, you might still transform the syntax, or tree-shaking, but they are not bundle itself.
+
+For browser, 
+1. if you are using http1, the resources must be downloaded one by one in the same connection. And for one page, the connections have a limition. It would be more faster if you could send less request.
+1. if you are using http2, it is more complex, again.
+    1. it's able to send multi requests in one connection.
+    1. A large file is easier to be compressed.
+    1. browser could not support http2
+    
+Developping for browser, if you not bundle the whole app, it will be much faster to rebuild.
+
+For node runtime,
+If you bundle the code, the start time might be faster. Because node need to find the dependency by its module resolution strategy, which might need lots of IO.
+
+### tree shaking
+Remove the code which is not finally used by the entry.
+
+## So what?
+
+If you are writing a lib, which is used by others. Do you want to use webpack to bundle it?
+Maybe, but only bundle your code, not includes the node_modules. So that your user could use tree-shaking better.
